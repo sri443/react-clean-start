@@ -41,6 +41,16 @@ npx react-clean-start my-app --cra --ts --folders
 - Node.js >= 18
 - Internet connection (runs `create-vite` or `create-react-app` under the hood)
 
+## Troubleshooting
+
+If `npx react-clean-start` uses an older cached version, run:
+
+```bash
+npx react-clean-start@latest my-app
+```
+
+This forces `npx` to use the latest published version.
+
 ## License
 
 MIT

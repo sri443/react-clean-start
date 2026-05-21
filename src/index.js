@@ -7,7 +7,6 @@ const createCRA = require("./creators/cra");
 const createVite = require("./creators/vite");
 
 const cleanCRA = require("./cleaners/cra");
-const cleanVite = require("./cleaners/vite");
 
 const generateFolders = require("./generators/folders");
 
@@ -45,6 +44,7 @@ async function run(projectName, options) {
       if (useCRA) {
         createCRA(projectName, typescript);
       } else {
+        spinner.stop(); // npm install output needs to show
         createVite(projectName, typescript);
       }
     } catch (e) {
@@ -53,7 +53,6 @@ async function run(projectName, options) {
       error("Make sure you have Node.js >= 18 and an active internet connection.");
       process.exit(1);
     }
-    spinner.succeed("Project scaffolded");
 
     // Verify creation succeeded
     if (!fs.existsSync(projectPath)) {
@@ -61,14 +60,13 @@ async function run(projectName, options) {
       process.exit(1);
     }
 
-    // Cleanup
-    spinner.start("Cleaning starter files...");
+    // CRA needs cleanup — Vite is already scaffolded clean
     if (useCRA) {
+      spinner.start("Cleaning starter files...");
       cleanCRA(projectPath, typescript);
-    } else {
-      cleanVite(projectPath, typescript);
+      spinner.stop();
+      success("Starter boilerplate removed");
     }
-    spinner.succeed("Starter boilerplate removed");
 
     // Generate folders
     if (options.folders) {

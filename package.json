@@ -1,0 +1,33 @@
+{
+  "name": "react-clean-start",
+  "version": "1.0.2",
+  "description": "Minimal React project initializer",
+  "main": "src/index.js",
+  "bin": {
+    "react-clean-start": "bin/cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "cra",
+    "cli"
+  ],
+  "author": "Sriraksha",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.3",
+    "fs-extra": "^11.3.5",
+    "ora": "^5.4.1",
+    "validate-npm-package-name": "^7.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

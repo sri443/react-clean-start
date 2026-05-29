@@ -36,6 +36,15 @@ export default defineConfig({
 })
 `;
 
+const VITE_CONFIG_JS_TAILWIND = `import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+`;
+
 const INDEX_HTML = (projectName) => `<!doctype html>
 <html lang="en">
   <head>
@@ -86,10 +95,45 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 `;
 
+const MAIN_JSX_TAILWIND = `import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import App from './App'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+`;
+
+const MAIN_TSX_TAILWIND = `import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import App from './App'
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+`;
+
 const APP_JSX = `function App() {
   return (
     <div>
       <h1>App</h1>
+    </div>
+  )
+}
+
+export default App
+`;
+
+const APP_JSX_TAILWIND = `function App() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <h1 className="text-3xl font-bold text-gray-800">App</h1>
     </div>
   )
 }
@@ -118,7 +162,7 @@ const TSCONFIG = JSON.stringify({
   include: ["src"],
 }, null, 2);
 
-function createVite(projectName, typescript) {
+function createVite(projectName, typescript, tailwind) {
   const projectPath = path.join(process.cwd(), projectName);
   const ext = typescript ? "tsx" : "jsx";
 
@@ -135,7 +179,7 @@ function createVite(projectName, typescript) {
   // vite.config
   fs.writeFileSync(
     path.join(projectPath, `vite.config.${typescript ? "ts" : "js"}`),
-    VITE_CONFIG_JS
+    tailwind ? VITE_CONFIG_JS_TAILWIND : VITE_CONFIG_JS
   );
 
   // index.html
@@ -144,16 +188,17 @@ function createVite(projectName, typescript) {
     typescript ? INDEX_HTML_TS(projectName) : INDEX_HTML(projectName)
   );
 
-  // src/main
-  fs.writeFileSync(
-    path.join(projectPath, `src/main.${ext}`),
-    typescript ? MAIN_TSX : MAIN_JSX
-  );
+  // src/main — include index.css import when tailwind is active
+  const mainContent = tailwind
+    ? (typescript ? MAIN_TSX_TAILWIND : MAIN_JSX_TAILWIND)
+    : (typescript ? MAIN_TSX : MAIN_JSX);
 
-  // src/App
+  fs.writeFileSync(path.join(projectPath, `src/main.${ext}`), mainContent);
+
+  // src/App — use tailwind-styled template when active
   fs.writeFileSync(
     path.join(projectPath, `src/App.${ext}`),
-    APP_JSX
+    tailwind ? APP_JSX_TAILWIND : APP_JSX
   );
 
   // tsconfig if needed

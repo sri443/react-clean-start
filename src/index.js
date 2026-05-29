@@ -9,6 +9,7 @@ const createVite = require("./creators/vite");
 const cleanCRA = require("./cleaners/cra");
 
 const generateFolders = require("./generators/folders");
+const generateTailwind = require("./generators/tailwind");
 
 const { success, info, error } = require("./utils/logger");
 
@@ -35,6 +36,7 @@ async function run(projectName, options) {
 
     const useCRA = options.cra;
     const typescript = options.ts;
+    const tailwind = options.tailwind;
 
     info(`Using ${useCRA ? "Create React App" : "Vite"}`);
 
@@ -45,7 +47,7 @@ async function run(projectName, options) {
         createCRA(projectName, typescript);
       } else {
         spinner.stop(); // npm install output needs to show
-        createVite(projectName, typescript);
+        createVite(projectName, typescript, tailwind);
       }
     } catch (e) {
       spinner.stop();
@@ -63,9 +65,17 @@ async function run(projectName, options) {
     // CRA needs cleanup — Vite is already scaffolded clean
     if (useCRA) {
       spinner.start("Cleaning starter files...");
-      cleanCRA(projectPath, typescript);
+      cleanCRA(projectPath, typescript, tailwind);
       spinner.stop();
       success("Starter boilerplate removed");
+    }
+
+    // Tailwind setup
+    if (tailwind) {
+      spinner.stop();
+      info("Setting up Tailwind CSS...");
+      generateTailwind(projectPath, typescript, useCRA);
+      success("Tailwind CSS configured");
     }
 
     // Generate folders

@@ -22,6 +22,10 @@ program
     "--folders",
     "Generate recommended folder structure"
   )
+  .option(
+    "--tailwind",
+    "Set up Tailwind CSS"
+  )
   .parse();
 
 const projectName = program.args[0];

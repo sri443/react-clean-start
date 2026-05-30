@@ -3,13 +3,21 @@ const {
   writeFile,
 } = require("../utils/files");
 
-function cleanCRA(projectPath, typescript) {
+function cleanCRA(projectPath, typescript, tailwind) {
   const ext = typescript ? "tsx" : "js";
 
-  writeFile(
-    projectPath,
-    `src/App.${ext}`,
-`function App() {
+  const appContent = tailwind
+    ? `function App() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <h1 className="text-3xl font-bold text-gray-800">App</h1>
+    </div>
+  );
+}
+
+export default App;
+`
+    : `function App() {
   return (
     <div>
       <h1>App</h1>
@@ -18,16 +26,19 @@ function cleanCRA(projectPath, typescript) {
 }
 
 export default App;
-`
-  );
+`;
+
+  writeFile(projectPath, `src/App.${ext}`, appContent);
+
+  const indexCSSImport = tailwind ? `import "./index.css";\n` : "";
 
   writeFile(
     projectPath,
     `src/index.${ext}`,
-typescript
-? `import React from "react";
+    typescript
+      ? `import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+${indexCSSImport}import App from "./App";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -39,9 +50,9 @@ root.render(
   </React.StrictMode>
 );
 `
-: `import React from "react";
+      : `import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+${indexCSSImport}import App from "./App";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root")
